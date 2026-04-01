@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="text-center mt-20">
+    <h1 class="text-4xl font-bold text-blue-700">Welcome to LMS Platform</h1>
+    <p class="mt-4 text-lg">Please login or register to access your dashboard</p>
+    <div class="mt-6 space-x-4">
+        <a href="{% url 'login' %}" class="bg-blue-700 text-white px-4 py-2 rounded hover:bg-blue-800">Login</a>
+        <a href="{% url 'register' %}" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Register</a>
+    </div>
+</div>
+{% endblock %}

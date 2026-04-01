@@ -1,0 +1,12 @@
+<h2 class="text-xl font-bold">{{ content.title }}</h2>
+
+{% if content.content_type == 'video' %}
+<video controls class="w-full mt-4">
+    <source src="{{ content.file.url }}" type="video/mp4">
+    Your browser does not support HTML video.
+</video>
+{% elif content.content_type == 'pdf' %}
+<a href="{{ content.file.url }}" target="_blank" class="text-blue-700">Open PDF</a>
+{% else %}
+<a href="{{ content.file.url }}" target="_blank" class="text-blue-700">Download {{ content.title }}</a>
+{% endif %}
