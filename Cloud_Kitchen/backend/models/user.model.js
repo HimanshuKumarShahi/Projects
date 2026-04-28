@@ -5,7 +5,7 @@ import bcrypt from "bcrypt"
 const userSchema=new Schema(
 
 {
-    UserName:{
+    Name:{
         type:String,
         required:true,
         unique:true,
@@ -20,16 +20,12 @@ const userSchema=new Schema(
         lowercase:true,
         trim:true,
     },
-    FullName:{
-        type:String,
-        required:true,
-        trim:true,
-        index:true,
-    },
     Password:{
         type:String,
         required:[true , "Password is Required."]
-    }
+    },
+    role:{type:String , enum:['Owner', 'Staff', 'Customer'], default:"Customer"},
+    kitchenId: { type: mongoose.Schema.Types.ObjectId, ref: 'Kitchen', default: null },
 },
 {
     timestamp:true
@@ -40,7 +36,7 @@ const userSchema=new Schema(
 userSchema.pre("save",async function(next){
     if(!this.isModified("password")) return next();
 
-    this.password=await bcrypt.hash(this.password,12)
+    this.password=await bcrypt.hash(this.password,10)
     next()
 })
 
