@@ -1,8 +1,10 @@
 import { User } from "../models/User.model.js";
-import { ApiError } from "../utils/ApiError.js"; 
+import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+
+
 
 const registerUser = asyncHandler(async (req, res) => {
     // 1. Data le rhe hai frontend se (Model ke hisab se names rakho)
@@ -25,18 +27,24 @@ const registerUser = asyncHandler(async (req, res) => {
     }
 
     // 4. Profile photo (Avatar) check aur upload
-    const avatarLocalPath = req.files?.avatar[0]?.path;
-    
+    console.log("Files received from Multer:", req.files); // Debugging ke liye: Check karo terminal mein kya aa raha hai
+
+    // Optional chaining aur safety check ke saath local path nikaalna
+    const avatarLocalPath = req.files?.avatar?.[0]?.path;
+
     if (!avatarLocalPath) {
-        throw new ApiError(400, "Avatar file is required");
+        throw new ApiError(400, "Avatar file is missing. Make sure you use the key 'avatar' in Postman form-data.");
     }
 
+    // Cloudinary pe upload
     const avatar = await uploadOnCloudinary(avatarLocalPath);
-    
-    if (!avatar) {
-        throw new ApiError(400, "Avatar upload failed on Cloudinary");
+
+    // Agar upload fail hua toh
+    if (!avatar || !avatar.url) {
+        throw new ApiError(500, "Avatar upload failed on Cloudinary. Check your Cloudinary API keys and internet connection.");
     }
 
+    console.log("Cloudinary Upload Success:", avatar.url);
     // 5. User creation (Model fields exactly match hone chahiye)
     const user = await User.create({
         name,
@@ -45,7 +53,7 @@ const registerUser = asyncHandler(async (req, res) => {
             public_id: avatar.public_id
         },
         email,
-        password, 
+        password,
         mobileNumber,
         role: role || "Customer"
     });
